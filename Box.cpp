@@ -10,26 +10,25 @@ Box::Box(int width, int height, float ini_speed) {
 Box::~Box() {
 }
 
-void Box::load(const char* texturePath){
-    //Cargo la imagen donde reside la textura del sprite
-    if (!tex.loadFromFile(texturePath)) {
-        std::cerr << "Error cargando la imagen sprites.png";
-        exit(0);
-    }
+void Box::load(sf::Texture textu, int clipX, int clipY){
+    //Copiamos la textura al objeto
+    tex = textu;
+    
     //Y creo el spritesheet a partir de la imagen anterior
     sprite = sf::Sprite(tex);
     
+    //Cojo el sprite que me interesa por defecto del sheet
+    sprite.setTextureRect(sf::IntRect(clipX, clipY, w, h));
+    
     //Le pongo el centroide donde corresponde
     sprite.setOrigin(w/2,h/2);
-    //Cojo el sprite que me interesa por defecto del sheet
-    sprite.setTextureRect(sf::IntRect(0, 0, w, h));
 }
 
 void Box::setOrigin(float ini_x, float ini_y){
     x = ini_x;
     y = ini_y;
     sprite.setPosition(x, y);
-    hitbox = sf::Rect<float>(x, y, w, h);
+    hitbox = sf::Rect<float>(x-(w/2), y-(h/2), w, h);
 }
 
 void Box::setSpeed(float speedy){

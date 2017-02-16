@@ -10,9 +10,11 @@ void Bar::setOrigin(float ini_x, float ini_y) {
     float w = Box::getW();
     float h = Box::getH();
     float portion = w/3;
-    leftHitbox = sf::Rect<float>(ini_x-portion, ini_y, portion, h);
-    centerHitbox = sf::Rect<float>(ini_x, ini_y, portion, h);
-    rightHitbox = sf::Rect<float>(ini_x+portion, ini_y, portion, h);
+    float fixHitboxX = portion/2;
+    float fixHitboxY = h/2;
+    leftHitbox = sf::Rect<float>(ini_x-portion-fixHitboxX, ini_y-fixHitboxY, portion, h);
+    centerHitbox = sf::Rect<float>(ini_x-fixHitboxX, ini_y-fixHitboxY, portion, h);
+    rightHitbox = sf::Rect<float>(ini_x+portion-fixHitboxX, ini_y-fixHitboxY, portion, h);
 }
 
 void Bar::move(int xDir, int yDir){
@@ -25,7 +27,7 @@ void Bar::move(int xDir, int yDir){
 
 int Bar::checkCollision(sf::Rect<float> other){
     if (leftHitbox.intersects(other)) return 0;
-    else if (centerHitbox.intersects(other)) return 1;
     else if (rightHitbox.intersects(other)) return 2;
+    else if (centerHitbox.intersects(other)) return 1;
     else return -1;
 }

@@ -25,7 +25,7 @@ public:
     
     void setOrigin(float ini_x, float ini_y);
     void setSpeed(float speedy);
-    void load(const char* texturePath);
+    void load(sf::Texture tex, int clipX, int clipY);
     void move(int xDir, int yDir);
     bool checkCollision(sf::Rect<float> other);
     

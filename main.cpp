@@ -1,16 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/* 
- * File:   main.cpp
- * Author: mario
- *
- * Created on 10 de febrero de 2017, 20:44
- */
-
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
@@ -24,6 +11,7 @@ using namespace std;
 int main() {
     //Creamos una ventana 
     sf::Font font;
+    sf::Texture tex;
     sf::RenderWindow window(sf::VideoMode(640, 480), "P0. Fundamentos de los Videojuegos. DCCIA");
 
     sf::Rect<float> leftWall = sf::Rect<float>(0, 0, 1, 480);
@@ -31,37 +19,46 @@ int main() {
     sf::Rect<float> topWall = sf::Rect<float>(0, 0, 640, 1);
     sf::Rect<float> bottomWall = sf::Rect<float>(0, 479, 640, 1);
     
-    font.loadFromFile("resources/sansation.ttf");
+    //Cargo la fuente para el texto
+    if (!font.loadFromFile("resources/sansation.ttf")){
+        std::cerr << "Error cargando la fuente sansation.ttf";
+        exit(0);
+    }
+    
+    //Cargo la imagen donde reside la textura del sprite
+    if (!tex.loadFromFile("resources/map.png")) {
+        std::cerr << "Error cargando la imagen map.png";
+        exit(0);
+    }
     
     int restantes = 10;
     
-    std::ostringstream ss;
+    ostringstream ss;
     ss << "Bloques restantes: " << restantes;
     
     sf::Text text(ss.str(), font);
-    //text.setOrigin(320,240);
     text.setPosition(180, 140);
     text.setCharacterSize(30);
     text.setStyle(sf::Text::Bold);
     text.setFillColor(sf::Color::Red);
     
     Bar barra = Bar(100, 25, 5.0f);
-    barra.load("resources/bar.png");
+    barra.load(tex, 0, 0);
     barra.setOrigin(320, 450);
     
     int ballMoveX = 0;
     int ballMoveY = 1;
     Box bola = Box(20, 20, 2.0f);
-    bola.load("resources/ball.png");
+    bola.load(tex, 160, 0);
     bola.setOrigin(320, 200);
     
-    Block bloque = Block(58,15,0);
-    bloque.load("resources/block.png");
-    std::vector<Block> bloques(restantes, bloque);
+    Block bloque = Block(60,15,0);
+    bloque.load(tex, 100, 0);
+    vector<Block> bloques(restantes, bloque);
     int spacer = 35;
     for (int i=0; i<bloques.size(); i++){
-        bloques[i].setOrigin((58*i)+spacer, 10);
-        spacer += 5;
+        bloques[i].setOrigin((60*i)+spacer, 10);
+        spacer += 3;
     }
     
     window.setFramerateLimit(60);
@@ -80,25 +77,22 @@ int main() {
                 case sf::Event::KeyPressed:
                     //Verifico si se pulsa alguna tecla de movimiento
                     switch(event.key.code) {
-                        //Mapeo del cursor
-                        case sf::Keyboard::Right:
-                            if (barra.getX() < 590) barra.move(1, 0);
-                        break;
-                        case sf::Keyboard::Left:
-                            if (barra.getX() > 50) barra.move(-1, 0);
-                        break;
                         //Tecla ESC para salir
                         case sf::Keyboard::Escape:
                             window.close();
                         break;
-                        //Cualquier tecla desconocida se imprime por pantalla su código
                         default:
-                            std::cout << event.key.code << std::endl;
                         break;
                     }
                 break;
                 default: break;
             }
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
+            if (barra.getX() < 540) barra.move(1, 0);
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
+            if (barra.getX() > 0) barra.move(-1, 0);
         }
         int coll = barra.checkCollision(bola.getHitbox());
         if (coll == 0){
