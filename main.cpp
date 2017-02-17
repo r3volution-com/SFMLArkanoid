@@ -12,6 +12,13 @@ int main() {
     //Creamos una ventana 
     sf::Font font;
     sf::Texture tex;
+    int restantes = 10;
+    int ballMoveX = 0;
+    int ballMoveY = 1;
+    int spacer = 35;
+    bool collision = false;
+    ostringstream ss;
+    
     sf::RenderWindow window(sf::VideoMode(640, 480), "P0. Fundamentos de los Videojuegos. DCCIA");
 
     sf::Rect<float> leftWall = sf::Rect<float>(0, 0, 1, 480);
@@ -31,9 +38,6 @@ int main() {
         exit(0);
     }
     
-    int restantes = 10;
-    
-    ostringstream ss;
     ss << "Bloques restantes: " << restantes;
     
     sf::Text text(ss.str(), font);
@@ -46,8 +50,6 @@ int main() {
     barra.load(tex, 0, 0);
     barra.setOrigin(320, 450);
     
-    int ballMoveX = 0;
-    int ballMoveY = 1;
     Box bola = Box(20, 20, 2.0f);
     bola.load(tex, 160, 0);
     bola.setOrigin(320, 200);
@@ -55,7 +57,6 @@ int main() {
     Block bloque = Block(60,15,0);
     bloque.load(tex, 100, 0);
     vector<Block> bloques(restantes, bloque);
-    int spacer = 35;
     for (int i=0; i<bloques.size(); i++){
         bloques[i].setOrigin((60*i)+spacer, 10);
         spacer += 3;
@@ -96,18 +97,24 @@ int main() {
         }
         int coll = barra.checkCollision(bola.getHitbox());
         if (coll == 0){
-            ballMoveY = -1;
-            ballMoveX = -1;
+            ballMoveY = ballMoveY*-1;
+            ballMoveX = ballMoveX*-1;
         } else if (coll == 1){
-            ballMoveY = -1;
+            ballMoveY = ballMoveY*-1;
             ballMoveX = 0;
         } else if (coll == 2){
-            ballMoveY = -1;
-            ballMoveX = 1;
+            ballMoveY = ballMoveY*-1;
+            ballMoveX = ballMoveX*-1;
+        } else if (coll == 3){
+            ballMoveY = ballMoveY*-1;
+            ballMoveX = ballMoveX*-1;
+        } else if (coll == 4){
+            ballMoveY = ballMoveY*-1;
+            ballMoveX = ballMoveX*-1;
         }
-        if (bola.checkCollision(topWall)) ballMoveY = 1;
-        if (bola.checkCollision(leftWall)) ballMoveX = 1;
-        if (bola.checkCollision(rightWall)) ballMoveX = -1;
+        if (bola.checkCollision(topWall)) ballMoveY = ballMoveY*-1;
+        if (bola.checkCollision(leftWall)) ballMoveX = ballMoveX*-1;
+        if (bola.checkCollision(rightWall)) ballMoveX = ballMoveX*-1;
         if (bola.checkCollision(bottomWall)) {ballMoveY = 0; ballMoveX = 0; }
         bola.move(ballMoveX, ballMoveY);
         
@@ -118,7 +125,8 @@ int main() {
         
         for (int i=0; i<10; i++){
             if(bloques[i].getActive()) {
-                if (bloques[i].checkCollision(bola.getHitbox())){
+                if (bloques[i].checkCollision(bola.getHitbox()) && !collision){
+                    collision = true;
                     ballMoveY = 1;
                     bloques[i].disable();
                     restantes--;
